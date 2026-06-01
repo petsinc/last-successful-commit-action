@@ -11,6 +11,10 @@ on:
 jobs:
   semantic_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Install pnpm
@@ -23,6 +27,24 @@ jobs:
           node-version: 24
           cache: pnpm
       - name: Semantic Release
+        id: semantic-release
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+      - name: Update floating release tags
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.semantic-release.outputs.new_release_git_tag }}
+          MAJOR_VERSION: ${{ steps.semantic-release.outputs.new_release_major_version }}
+        run: |
+          set -euo pipefail
+
+          major_tag="v${MAJOR_VERSION}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch --tags --force origin "$RELEASE_TAG"
+          git tag --force "$major_tag" "$RELEASE_TAG"
+          git tag --force latest "$RELEASE_TAG"
+          git push --force origin "$major_tag" latest
