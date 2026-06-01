@@ -1,8 +1,8 @@
 name: '"Last successful commit" Github Action'
 description: 'GitHub action for identifying the last successful commit for a given workflow and branch'
 runs:
-  using: node16
-  main: "dist/index.js"
+  using: node24
+  main: "dist/index.cjs"
 inputs:
   workflow-id:
     description: 'The workflow ID to check for the last successful commit. You can use the filename of the workflow'
@@ -17,3 +17,6 @@ inputs:
     description: 'The GitHub token to use for the API calls'
     required: true
     default: ${{ github.token }}
+outputs:
+  commit-sha:
+    description: 'SHA of the last successful commit'

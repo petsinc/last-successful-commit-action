@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploying affected apps
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: nickderobertis/last-successful-commit-action@v1
         id: last_successful_commit
         with:
@@ -103,7 +103,7 @@ This is a rework of [nrwl/last-successful-commit-action](https://github.com/nrwl
 
 ## Developing
 
-Clone the repo and then run `npm install` to set up the pre-commit hooks.
+Clone the repo and then run `pnpm install` to set up the pre-commit hooks.
 
 ## Author
 
