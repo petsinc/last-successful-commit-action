@@ -50,7 +50,7 @@ jobs:
     name: Deploying affected apps
     steps:
       - uses: actions/checkout@v6
-      - uses: nickderobertis/last-successful-commit-action@v1
+      - uses: petsinc/last-successful-commit-action@v1
         id: last_successful_commit
         with:
           branch: main
@@ -96,8 +96,8 @@ we don't accidentally skip deploying a project that has changed.
 
 This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for versioning.
 Any time the major version changes, there may be breaking changes. If it is working well for you, consider
-pegging to the current major version, e.g. `nickderobertis/last-successful-commit-action@v1`, to avoid breaking changes. Alternatively,
-you can always point to the most recent stable release with the `nickderobertis/last-successful-commit-action@latest`.
+pegging to the current major version, e.g. `petsinc/last-successful-commit-action@v1`, to avoid breaking changes. Alternatively,
+you can always point to the most recent stable release with the `petsinc/last-successful-commit-action@latest`.
 
 This is a rework of [nrwl/last-successful-commit-action](https://github.com/nrwl/last-successful-commit-action).
 

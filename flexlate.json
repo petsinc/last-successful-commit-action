@@ -18,7 +18,7 @@
         "repo_name": "last-successful-commit-action",
         "full_name": "\"Last successful commit\" Github Action",
         "action_type": "typescript",
-        "repo_username": "nickderobertis",
+        "repo_username": "petsinc",
         "short_description": "GitHub action for identifying the last successful commit for a given workflow and branch",
         "package_author": "Nick DeRobertis",
         "author_email": "derobertis.nick@gmail.com",

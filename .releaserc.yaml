@@ -6,7 +6,7 @@ branches:
   - name: alpha
     prerelease: true
 
-repositoryUrl: https://github.com/nickderobertis/last-successful-commit-action
+repositoryUrl: https://github.com/petsinc/last-successful-commit-action
 
 plugins:
   - "@semantic-release/commit-analyzer"
