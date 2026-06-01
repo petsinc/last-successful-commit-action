@@ -5,9 +5,25 @@ on:
     types: [published, edited]
 
 jobs:
-  actions-tagger:
+  update-tags:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: Actions-R-Us/actions-tagger@latest
+      - uses: actions/checkout@v6
         with:
-          publish_latest_tag: true
+          fetch-depth: 0
+      - name: Update floating release tags
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          major_tag="${RELEASE_TAG%%.*}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag --force "$major_tag" "$RELEASE_TAG"
+          git tag --force latest "$RELEASE_TAG"
+          git push --force origin "$major_tag" latest
