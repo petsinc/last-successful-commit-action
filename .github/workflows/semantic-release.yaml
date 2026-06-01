@@ -30,7 +30,7 @@ jobs:
         id: semantic-release
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Update floating release tags
         if: steps.semantic-release.outputs.new_release_published == 'true'
         env:
