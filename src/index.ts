@@ -9,17 +9,30 @@ async function run(): Promise<void> {
       owner,
       repo,
       workflow_id: core.getInput("workflow-id"),
-      status: "success",
       branch: core.getInput("branch") || undefined,
       event: core.getInput("event") || undefined,
+      per_page: 100,
     } as const;
     core.debug(`Workflow list inputs: ${JSON.stringify(workflowListInputs)}`);
-    const workflowRuns = await octokit.rest.actions.listWorkflowRuns(
+    // The status=success filter sometimes serves a stale snapshot that lists a run weeks old
+    // first. Filter the latest runs here instead, and use the status filter only when none of
+    // them succeeded. Neither listing's order is documented, so take the latest completion.
+    const latestRuns = await octokit.rest.actions.listWorkflowRuns(
       workflowListInputs
     );
-    core.debug(`Workflow runs: ${JSON.stringify(workflowRuns.data)}`);
+    let successfulRuns = latestRuns.data.workflow_runs.filter(
+      (run) => run.conclusion === "success"
+    );
+    if (successfulRuns.length === 0) {
+      const filteredRuns = await octokit.rest.actions.listWorkflowRuns({
+        ...workflowListInputs,
+        status: "success",
+      });
+      successfulRuns = filteredRuns.data.workflow_runs;
+    }
+    core.debug(`Successful runs: ${JSON.stringify(successfulRuns)}`);
 
-    if (workflowRuns.data.total_count === 0) {
+    if (successfulRuns.length === 0) {
       core.warning(
         "No successful workflow runs found. Defaulting to an early commit."
       );
@@ -34,8 +47,10 @@ async function run(): Promise<void> {
       return exit(lastCommit.sha);
     }
 
-    const lastSuccessCommitHash = workflowRuns.data.workflow_runs[0].head_sha;
-    return exit(lastSuccessCommitHash);
+    const lastSuccessfulRun = successfulRuns.reduce((latest, run) =>
+      run.updated_at > latest.updated_at ? run : latest
+    );
+    return exit(lastSuccessfulRun.head_sha);
   } catch (e) {
     if (e instanceof Error) {
       core.setFailed(e.message);
